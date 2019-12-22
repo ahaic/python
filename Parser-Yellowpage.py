@@ -1,6 +1,6 @@
 import urllib.request
 from bs4 import BeautifulSoup
-import re
+import re,csv
 
 
 '''
@@ -11,8 +11,11 @@ link1='https://www.yellowpages.com.au/search/listings?clue=security&locationClue
 link2='&referredBy=UNKNOWN&eventType=pagination'
 page=1
 index=1
+output=[]
 def filter_list():
     global index
+    global output      # store all info
+
     for div in divs:
         items = BeautifulSoup(str(div),features = "lxml")
         try:
@@ -43,7 +46,9 @@ def filter_list():
 
         except Exception as e:
             email="None Email"
+
         print('#',index,'--',company,'--',tel.strip(),'--',email,'--',address)
+        output.append([index,company,tel.strip(),email,address])
         index=index+1
 
 
@@ -83,3 +88,13 @@ while page:
 print('----------------------')
 #print(len(divs))
 print(soup.find('span',class_='emphasise').getText())
+
+
+
+#timestr = time.strftime("%Y%m%d-%H%M%S")
+
+with open('output.csv', 'w',newline='', encoding='utf-8-sig') as file:
+    writer = csv.writer(file)
+    for i in output:
+        writer.writerow(i)
+    print('write finished')
